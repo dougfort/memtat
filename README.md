@@ -1,2 +1,2 @@
-# memtat
+# mentat
 Augmented Mental Processing
