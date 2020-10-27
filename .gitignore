@@ -17,3 +17,7 @@ Cargo.lock
 # vscode
 
 mentat.code-workspace
+
+# workfile
+
+history.txt

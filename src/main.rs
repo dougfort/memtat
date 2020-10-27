@@ -1,38 +1,32 @@
-use std::io;
-use std::io::prelude::*;
+use rustyline::error::ReadlineError;
+use rustyline::Editor;
 
-fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    prompt()?;
-    for line_result in stdin.lock().lines() {
-        let line = line_result?;
-        let command: Vec<&str> = line.trim().split_whitespace().map(|s| s.trim()).collect();
-
-        if command.is_empty() {
-            prompt()?;
-            continue;
-        }
-        match command[0] {
-            "" => (),
-            "quit" => {
-                println!();
+fn main() {
+    // `()` can be used when no completer is required
+    let mut rl = Editor::<()>::new();
+    if rl.load_history("history.txt").is_err() {
+        println!("No previous history.");
+    }
+    loop {
+        let readline = rl.readline(">> ");
+        match readline {
+            Ok(line) => {
+                rl.add_history_entry(line.as_str());
+                println!("Line: {}", line);
+            }
+            Err(ReadlineError::Interrupted) => {
+                println!("CTRL-C");
                 break;
-            },
-            _ => {
-                println!("invalid input: {}", command[0]);
+            }
+            Err(ReadlineError::Eof) => {
+                println!("CTRL-D");
+                break;
+            }
+            Err(err) => {
+                println!("Error: {:?}", err);
+                break;
             }
         }
-
-        prompt()?;
     }
-
-    Ok(())
-}
-
-fn prompt() -> io::Result<()> {
-    println!();
-    print!("> ");
-    io::stdout().flush()?;
-
-    Ok(())
+    rl.save_history("history.txt").unwrap();
 }
